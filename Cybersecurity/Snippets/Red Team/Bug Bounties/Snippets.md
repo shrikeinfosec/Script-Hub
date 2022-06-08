@@ -92,7 +92,7 @@ trufflehog github --org=ORGANISATION
 ffuf -w /path/to/your/wordlists/jhaddix_all.txt -u <URL>/FUZZ -H 'User-Agent: USERNAME HACKERONE_EMAIL' -recursion -recursion-depth 5 -c -maxtime 3600 -rate 20 -p "0.1-2.0" -fc 404 -od /path/to/your/targets/<target>/ffuf/
 ```
 
-### Decompile/Analyse APK files with [apkrip.sh](/Script-Hub/Cybersecurity/Red%20Team/Python/apkrip/):
+### Decompile/Analyse APK files with [apkrip.sh](/Cybersecurity/Red%20Team/Bash/apkrip/):
 ```bash
 ./apkrip.sh -f /path/to/your/targets/<target>/<app>.apk -d /path/to/your/targets/<target> -t <target>
 ```
