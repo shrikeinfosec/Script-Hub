@@ -1,92 +1,97 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Ownership, licensing and usage documentation can be found at the bottom of this script.
+# Ownership, licensing and usage documentation
+# can be found at the bottom of this script.
 
 import re
-import requests
-
+from argparse import ArgumentParser
 from rich import print as rprint, pretty
 from rich.progress import Progress
-from argparse import ArgumentParser
+import requests
 
 
 pretty.install()
 
 # ----------------------------------------------------- #
 
-def registerArguments():
-    argumentsParser = ArgumentParser(
+
+def register_arguments():
+    ''' Registers the arguments for the script.'''
+    arguments_parser = ArgumentParser(
         description='Utility script to check ip/domains for AlienVault OTX Pulses.')
 
-    argumentsParser.add_argument(
-        "-i", "--ip", help='IP to check for pulses.', dest="ip"),
-    argumentsParser.add_argument(
-        "-d", "--domain", help='Domain to check for pulses.', dest="domain"),
-    argumentsParser.add_argument("-m", "--markdown", help='Export in Markdown format.',
-                                 dest="markdown", action='store_true'),
-    argumentsParser.add_argument("-q", "--quiet", help="Does not print to console.",
-                                 dest="quiet", action='store_true'),
-    argumentsParser.add_argument(
+    arguments_parser.add_argument(
+        "-i", "--ip", help='IP to check for pulses.', dest="ip")
+    arguments_parser.add_argument(
+        "-d", "--domain", help='Domain to check for pulses.', dest="domain")
+    arguments_parser.add_argument("-m", "--markdown", help='Export in Markdown format.', dest="markdown", action='store_true')
+    arguments_parser.add_argument("-q", "--quiet", help="Does not print to console.", dest="quiet", action='store_true')
+    arguments_parser.add_argument(
         "-a", "--apikey", help='API key for AlienVaultOTX', dest="api_key")
 
-    return argumentsParser.parse_args()
+    return arguments_parser.parse_args()
 
-def checkIPForPulses(ip_address, api_key):
 
-    with Progress(transient=True) as ipCheckProgress:
-        ipTask = ipCheckProgress.add_task("IP Check:", total=10)
+def check_ip_for_pulses(ip_address, api_key):
+    '''Sends an API request to OTX with an IP address to check for pulses.'''
+
+    with Progress(transient=True) as ip_check_progress:
+        ip_task = ip_check_progress.add_task("IP Check:", total=10)
 
         endpoint = f"https://otx.alienvault.com/api/v1/indicators/IPv4/{ip_address}/general"
         headers = {'X-OTX-API-KEY': f'{api_key}'}
-        ipCheckProgress.update(ipTask, advance=2)
+        ip_check_progress.update(ip_task, advance=2)
 
         res = requests.get(endpoint, headers=headers)
-        ipCheckProgress.update(ipTask, advance=4)
+        ip_check_progress.update(ip_task, advance=4)
 
         if(res.status_code == 200):
-            ipCheckProgress.update(ipTask, advance=2)
+            ip_check_progress.update(ip_task, advance=2)
 
             return res.json()
         else:
-            ipCheckProgress.update(ipTask, advance=2)
+            ip_check_progress.update(ip_task, advance=2)
 
             return False
 
-def checkDomainForPulses(domain_name, api_key):
 
-    with Progress(transient=True) as domainCheckProgress:
-        domainTask = domainCheckProgress.add_task("Domain Check:", total=10)
+def check_domain_for_pulses(domain_name, api_key):
+    '''Sends an API request to OTX with a domain name to check for pulses.'''
+
+    with Progress(transient=True) as domain_check_progress:
+        domain_task = domain_check_progress.add_task("Domain Check:", total=10)
 
         endpoint = f"https://otx.alienvault.com/api/v1/indicators/domain/{domain_name}/general"
         headers = {'X-OTX-API-KEY': f'{api_key}'}
-        domainCheckProgress.update(domainTask, advance=2)
+        domain_check_progress.update(domain_task, advance=2)
 
         res = requests.get(endpoint, headers=headers)
-        domainCheckProgress.update(domainTask, advance=4)
+        domain_check_progress.update(domain_task, advance=4)
 
         if(res.status_code == 200):
-            domainCheckProgress.update(domainTask, advance=2)
+            domain_check_progress.update(domain_task, advance=2)
 
             return res.json()
         else:
-            domainCheckProgress.update(domainTask, advance=2)
+            domain_check_progress.update(domain_task, advance=2)
 
             return False
 
-def convertRichToMarkdown(string):
 
+def convert_rich_to_markdown(string):
+    '''Converts text formatted with the rich library into alternative markdown formatting.'''
     data = str(string)
 
     patterns = {
-        r'\[bold\]': f'\n**',
+        r'\[bold\]': '\n**',
         r'\[\/bold\]': '**',
-        r'\[bold black on green blink\]': f'\n***',
+        r'\[bold black on green blink\]': '\n***',
         r'\[\/bold black on green blink\]': '***',
-        r'\[bold italic\]': f'\n## ',
+        r'\[bold italic\]': '\n## ',
         r'\[\/bold italic\]': '',
         # Converts a link with the contents intact.
-        r'\[link=(.*?)\]\1\[\/link\]': fr'\n[\1](\1)',
+        r'\[link=(.*?)\]\1\[\/link\]': r'\n[\1](\1)',
     }
 
     for pattern in patterns:
@@ -94,105 +99,108 @@ def convertRichToMarkdown(string):
 
     return data
 
-def parsePulseResponse(data, arg):
+
+def parse_pulse_response(data, arg):
+    '''Parses the response data from the API.'''
 
     pulse_info = data['pulse_info']
 
     malware_families = []
     output = []
 
-    divider = f"\n----"
+    divider = "\n----"
 
-    fPulseHeader = f"[bold italic]Pulse Information for {arg}[/bold italic]"
+    f_pulse_header = f"[bold italic]Pulse Information for {arg}[/bold italic]"
 
-    fCount = "[bold]Count[/bold]"
+    f_count = "[bold]Count[/bold]"
     count = pulse_info['count']
 
-    output.append(fPulseHeader)
-    output.append(fCount)
+    output.append(f_pulse_header)
+    output.append(f_count)
     output.append(count)
 
     for pulse in pulse_info['pulses']:
-        fPulse = "[bold]Pulse[/bold]"
-        pulseName = pulse['name']
+        f_pulse = "[bold]Pulse[/bold]"
+        pulse_name = pulse['name']
 
-        output.append(fPulse)
-        output.append(pulseName)
+        output.append(f_pulse)
+        output.append(pulse_name)
 
         if(pulse['description']):
-            fPulseDescriptionHeader = "[bold]Description[/bold]"
-            pulseDescription = pulse['description']
+            f_pulse_description_header = "[bold]Description[/bold]"
+            pulse_description = pulse['description']
 
-            output.append(fPulseDescriptionHeader)
-            output.append(pulseDescription)
+            output.append(f_pulse_description_header)
+            output.append(pulse_description)
 
         if(pulse['author']):
-            fPulseAuthorHeader = "[bold]Author[/bold]"
-            pulseAuthor = pulse['author']['username']
+            f_pulse_author_header = "[bold]Author[/bold]"
+            pulse_author = pulse['author']['username']
 
-            output.append(fPulseAuthorHeader)
-            output.append(pulseAuthor)
+            output.append(f_pulse_author_header)
+            output.append(pulse_author)
 
         output.append(divider)
 
-    fPulseAdditionalDetailsHeader = "[bold italic]Additional Details[/bold italic]"
+    f_pulse_additional_details_header = "[bold italic]Additional Details[/bold italic]"
 
-    output.append(fPulseAdditionalDetailsHeader)
+    output.append(f_pulse_additional_details_header)
 
     if(pulse_info['related']):
         for group in pulse_info['related']:
 
             if(pulse_info['related'][group]['malware_families']):
-                fPulseAssociatedMalwareFamiliesHeader = "[bold]Associated Malware families[/bold]"
+                f_pulse_associated_malware_families_header = "[bold]Associated Malware families[/bold]"
 
-                output.append(fPulseAssociatedMalwareFamiliesHeader)
+                output.append(f_pulse_associated_malware_families_header)
 
                 for malware in pulse_info['related'][group]['malware_families']:
                     malware_families.append(malware)
 
-                    fPulseMalware = f"- {malware}"
+                    f_pulse_malware = f"- {malware}"
 
-                    output.append(fPulseMalware)
+                    output.append(f_pulse_malware)
 
     if(pulse_info['references']):
-        fPulseReferencesHeader = "[bold]References[/bold]"
+        f_pulse_references_header = "[bold]References[/bold]"
 
-        output.append(fPulseReferencesHeader)
+        output.append(f_pulse_references_header)
 
         for reference in pulse_info['references']:
-            fReference = f'[link={reference}]{reference}[/link]'
+            f_reference = f'[link={reference}]{reference}[/link]'
 
-            output.append(fReference)
+            output.append(f_reference)
 
     return output
 
-def runPulseCheck(arg):
+
+def run_pulse_check(arg):
+    '''Evaluates the provided arguments and starts the relevant pulse checks.'''
     if(arg == args.domain):
-        data = checkDomainForPulses(args.domain, args.api_key)
+        data = check_domain_for_pulses(args.domain, args.api_key)
 
     elif(arg == args.ip):
-        data = checkIPForPulses(args.ip, args.api_key)
+        data = check_ip_for_pulses(args.ip, args.api_key)
 
     else:
         data = False
 
     rprint("")
 
-
     if(data is False):
         output = ""
-        response = f'[bold black on red blink]:warning: Failed to get valid response! [/bold black on red blink]'
+        response = '[bold black on red blink]:warning: Failed to get valid response! [/bold black on red blink]'
 
     else:
-        output = parsePulseResponse(data, arg)
+        output = parse_pulse_response(data, arg)
         response = f'[bold black on green blink]Successfully retrieved data on {arg}[/bold black on green blink]'
 
     if(args.quiet is False):
         if(args.markdown):
 
-            rprint(convertRichToMarkdown(response))
+            rprint(convert_rich_to_markdown(response))
             for line in output:
-                rprint(convertRichToMarkdown(line))
+                rprint(convert_rich_to_markdown(line))
 
         else:
             rprint(response)
@@ -201,44 +209,48 @@ def runPulseCheck(arg):
 
     return output
 
-def exportResults(data, filename):
+
+def export_results(data, filename):
+    '''Exports the results of the pulses to a markdown file.'''
 
     if(args.markdown):
 
-        file = open(filename, 'w')
-        for line in data:
-            file.write(convertRichToMarkdown(line) + "\n")
-
-        file.close()
+        with open(filename, encoding='utf-8') as file:
+            for line in data:
+                file.write(convert_rich_to_markdown(line) + "\n")
 
 # ----------------------------------------------------- #
 
-args = registerArguments()
+
+args = register_arguments()
+
 
 def main():
+    '''The main function of the script.'''
 
     if(args.api_key is None):
-        rprint('[bold black on red blink]:warning: No API Key provided! Exiting... [/bold black on red blink]')
+        rprint(
+            '[bold black on red blink]:warning: No API Key provided! Exiting... [/bold black on red blink]')
         exit()
 
     if(args.ip is not None):
         rprint(f'Checking IP data for {args.ip}')
-        check_data = runPulseCheck(args.ip)
-        exportResults(check_data, filename=f'ip_{args.ip}.md')
-
+        check_data = run_pulse_check(args.ip)
+        export_results(check_data, filename=f'ip_{args.ip}.md')
 
     if(args.domain is not None):
         rprint(f'Checking domain data for {args.domain}...')
-        check_data = runPulseCheck(args.domain)
-        exportResults(check_data, filename=f'domain_{args.domain}.md')
+        check_data = run_pulse_check(args.domain)
+        export_results(check_data, filename=f'domain_{args.domain}.md')
 
-    fCompletedPulse = "[bold black on green blink]Enrichment complete.[/bold black on green blink]"
+    f_completed_pulse = "[bold black on green blink]Enrichment complete.[/bold black on green blink]"
     if(args.quiet is False):
         if(args.markdown):
-            rprint(convertRichToMarkdown(fCompletedPulse))
+            rprint(convert_rich_to_markdown(f_completed_pulse))
         else:
-            rprint(fCompletedPulse)
+            rprint(f_completed_pulse)
     exit()
+
 
 if __name__ == "__main__":
     main()
