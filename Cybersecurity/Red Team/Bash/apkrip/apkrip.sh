@@ -1,12 +1,12 @@
 #!/bin/bash
 
-function runAPKTool() {
+runAPKTool() {
     printf "Running APKTool extraction...\n"
     apktool_cmd=$(java -jar "$apktool_loc" decode -q -o "$target/apktool/$target" "$file")
     eval "$apktool_cmd"
 }
 
-function runAPKLeaks() {
+runAPKLeaks() {
     printf "Running APKLeaks extraction...\n"
     apkleaks_cmd=$(apkleaks -f "$file" -o "$target/apkleaks_$target.json" --json -a "--log-level QUIET") # we want to remove extra logging, so we use quiet.
     eval "$apkleaks_cmd"
@@ -32,8 +32,12 @@ done
 
 printf "\nEvaluating APK file...\n"
 printf "%s was selected for analysis\n" "$file"
+
 runAPKLeaks
+
 printf "Initial analysis complete\n"
+
 runAPKTool
+
 printf "APK decompiled and available in apktool\n"
 printf "Process complete! Press enter to exit...\n"
