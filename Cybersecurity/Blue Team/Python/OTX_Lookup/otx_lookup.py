@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+""" otx_lookup.py: A utility script to check ip/domains for AlienVault OTX Pulses."""
+
 # Ownership, licensing and usage documentation
 # can be found at the bottom of this script.
 
 import re
 from argparse import ArgumentParser
+import sys
 from rich import print as rprint, pretty
 from rich.progress import Progress
 import requests
@@ -25,8 +28,12 @@ def register_arguments():
         "-i", "--ip", help='IP to check for pulses.', dest="ip")
     arguments_parser.add_argument(
         "-d", "--domain", help='Domain to check for pulses.', dest="domain")
-    arguments_parser.add_argument("-m", "--markdown", help='Export in Markdown format.', dest="markdown", action='store_true')
-    arguments_parser.add_argument("-q", "--quiet", help="Does not print to console.", dest="quiet", action='store_true')
+    arguments_parser.add_argument(
+        "-m", "--markdown", help='Export in Markdown format.', dest="markdown",
+        action='store_true')
+    arguments_parser.add_argument(
+        "-q", "--quiet", help="Does not print to console.", dest="quiet",
+        action='store_true')
     arguments_parser.add_argument(
         "-a", "--apikey", help='API key for AlienVaultOTX', dest="api_key")
 
@@ -46,7 +53,7 @@ def check_ip_for_pulses(ip_address, api_key):
         res = requests.get(endpoint, headers=headers)
         ip_check_progress.update(ip_task, advance=4)
 
-        if(res.status_code == 200):
+        if res.status_code == 200:
             ip_check_progress.update(ip_task, advance=2)
 
             return res.json()
@@ -69,7 +76,7 @@ def check_domain_for_pulses(domain_name, api_key):
         res = requests.get(endpoint, headers=headers)
         domain_check_progress.update(domain_task, advance=4)
 
-        if(res.status_code == 200):
+        if res.status_code == 200:
             domain_check_progress.update(domain_task, advance=2)
 
             return res.json()
@@ -126,14 +133,14 @@ def parse_pulse_response(data, arg):
         output.append(f_pulse)
         output.append(pulse_name)
 
-        if(pulse['description']):
+        if pulse['description']:
             f_pulse_description_header = "[bold]Description[/bold]"
             pulse_description = pulse['description']
 
             output.append(f_pulse_description_header)
             output.append(pulse_description)
 
-        if(pulse['author']):
+        if pulse['author']:
             f_pulse_author_header = "[bold]Author[/bold]"
             pulse_author = pulse['author']['username']
 
@@ -146,11 +153,12 @@ def parse_pulse_response(data, arg):
 
     output.append(f_pulse_additional_details_header)
 
-    if(pulse_info['related']):
+    if pulse_info['related']:
         for group in pulse_info['related']:
 
-            if(pulse_info['related'][group]['malware_families']):
-                f_pulse_associated_malware_families_header = "[bold]Associated Malware families[/bold]"
+            if pulse_info['related'][group]['malware_families']:
+                f_pulse_associated_malware_families_header = (
+                    "[bold]Associated Malware families[/bold]")
 
                 output.append(f_pulse_associated_malware_families_header)
 
@@ -161,7 +169,7 @@ def parse_pulse_response(data, arg):
 
                     output.append(f_pulse_malware)
 
-    if(pulse_info['references']):
+    if pulse_info['references']:
         f_pulse_references_header = "[bold]References[/bold]"
 
         output.append(f_pulse_references_header)
@@ -176,10 +184,10 @@ def parse_pulse_response(data, arg):
 
 def run_pulse_check(arg):
     '''Evaluates the provided arguments and starts the relevant pulse checks.'''
-    if(arg == args.domain):
+    if arg == args.domain:
         data = check_domain_for_pulses(args.domain, args.api_key)
 
-    elif(arg == args.ip):
+    elif arg == args.ip:
         data = check_ip_for_pulses(args.ip, args.api_key)
 
     else:
@@ -187,16 +195,19 @@ def run_pulse_check(arg):
 
     rprint("")
 
-    if(data is False):
+    if data is False:
         output = ""
-        response = '[bold black on red blink]:warning: Failed to get valid response! [/bold black on red blink]'
+        response = (
+            '[bold black on red blink]:warning: Failed to get valid response! \
+                [/bold black on red blink]')
 
     else:
         output = parse_pulse_response(data, arg)
-        response = f'[bold black on green blink]Successfully retrieved data on {arg}[/bold black on green blink]'
+        response = (f'[bold black on green blink]Successfully retrieved data on {arg} \
+            [/bold black on green blink]')
 
-    if(args.quiet is False):
-        if(args.markdown):
+    if args.quiet is False:
+        if args.markdown:
 
             rprint(convert_rich_to_markdown(response))
             for line in output:
@@ -213,7 +224,7 @@ def run_pulse_check(arg):
 def export_results(data, filename):
     '''Exports the results of the pulses to a markdown file.'''
 
-    if(args.markdown):
+    if args.markdown:
 
         with open(filename, encoding='utf-8') as file:
             for line in data:
@@ -228,28 +239,30 @@ args = register_arguments()
 def main():
     '''The main function of the script.'''
 
-    if(args.api_key is None):
+    if args.api_key is None:
         rprint(
-            '[bold black on red blink]:warning: No API Key provided! Exiting... [/bold black on red blink]')
-        exit()
+            '[bold black on red blink]:warning: No API Key provided! \
+                Exiting... [/bold black on red blink]')
+        sys.exit()
 
-    if(args.ip is not None):
+    if args.ip is not None:
         rprint(f'Checking IP data for {args.ip}')
         check_data = run_pulse_check(args.ip)
         export_results(check_data, filename=f'ip_{args.ip}.md')
 
-    if(args.domain is not None):
+    if args.domain is not None:
         rprint(f'Checking domain data for {args.domain}...')
         check_data = run_pulse_check(args.domain)
         export_results(check_data, filename=f'domain_{args.domain}.md')
 
-    f_completed_pulse = "[bold black on green blink]Enrichment complete.[/bold black on green blink]"
-    if(args.quiet is False):
-        if(args.markdown):
+    f_completed_pulse = ("[bold black on green blink]Enrichment complete. \
+        [/bold black on green blink]")
+    if args.quiet is False:
+        if args.markdown:
             rprint(convert_rich_to_markdown(f_completed_pulse))
         else:
             rprint(f_completed_pulse)
-    exit()
+    sys.exit()
 
 
 if __name__ == "__main__":
@@ -265,9 +278,8 @@ if __name__ == "__main__":
 @Status = "In Development"
 """
 
-""" otx_lookup.py: A utility script to check ip/domains for AlienVault OTX Pulses.
-
-    An API key *MUST* be provided - you can register for one at https://otx.alienvault.com/api 
+"""
+    An API key *MUST* be provided - you can register for one at https://otx.alienvault.com/api
     and signing-up for an account.
 
 Examples:
@@ -279,16 +291,16 @@ Examples:
     Look up a single IP without printing to the console:
 
         $ python otx_lookup.py -i 1.1.1.1 -a <API_KEY> -q
-    
+
     Lookup a domain:
 
         $ python otx_lookup.py -d google.com -a <API_KEY>
-    
+
     Lookup a domain and export the results to a .md file:
     * In future, this will support an optional -f flag for a filename to be specified.
 
         $ python otx_lookup.py -d google.com -a <API_KEY> -m
-    
+
 Todo:
     * Implement the -f argument to specify a filename for an exported markdown file.
     * Add support for multiple IP addresses or domains read from a text file.
