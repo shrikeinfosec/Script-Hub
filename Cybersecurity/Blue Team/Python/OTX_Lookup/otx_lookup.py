@@ -94,8 +94,8 @@ def convert_rich_to_markdown(string):
         r'\[link=(.*?)\]\1\[\/link\]': r'\n[\1](\1)',
     }
 
-    for pattern in patterns:
-        data = re.sub(pattern, patterns[pattern], data)
+    for key, val in patterns.items():
+        data = re.sub(key, val, data)
 
     return data
 
