@@ -3,13 +3,13 @@
 runAPKTool() {
     printf 'Running APKTool extraction...\n'
     apktool_cmd=$(java -jar "$apktool_loc" decode -q -o "$target/apktool/$target" "$file")
-    eval "$apktool_cmd"
+    echo "$apktool_cmd"
 }
 
 runAPKLeaks() {
     printf 'Running APKLeaks extraction...\n'
     apkleaks_cmd=$(apkleaks -f "$file" -o "$target/apkleaks_$target.json" --json -a "--log-level QUIET") # we want to remove extra logging, so we use quiet.
-    eval "$apkleaks_cmd"
+    echo "$apkleaks_cmd"
 }
 
 print_usage() {
