@@ -51,7 +51,7 @@ def checkIPForPulses(ip_address, api_key):
         else:
             ipCheckProgress.update(ipTask, advance=2)
 
-            return ""
+            return False
 
 def checkDomainForPulses(domain_name, api_key):
 
@@ -178,12 +178,13 @@ def runPulseCheck(arg):
 
     rprint("")
 
-    output = parsePulseResponse(data, arg)
 
-    if(output is False):
+    if(data is False):
+        output = ""
         response = f'[bold black on red blink]:warning: Failed to get valid response! [/bold black on red blink]'
 
     else:
+        output = parsePulseResponse(data, arg)
         response = f'[bold black on green blink]Successfully retrieved data on {arg}[/bold black on green blink]'
 
     if(args.quiet is False):
