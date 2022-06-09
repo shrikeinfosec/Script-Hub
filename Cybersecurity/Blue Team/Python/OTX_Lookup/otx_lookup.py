@@ -32,11 +32,6 @@ def registerArguments():
 
     return argumentsParser.parse_args()
 
-def isValidData(data):
-    if(data == ""):
-        return False
-    return True
-
 def checkIPForPulses(ip_address, api_key):
 
     with Progress(transient=True) as ipCheckProgress:
@@ -77,7 +72,7 @@ def checkDomainForPulses(domain_name, api_key):
         else:
             domainCheckProgress.update(domainTask, advance=2)
 
-            return ""
+            return False
 
 def convertRichToMarkdown(string):
 
@@ -179,13 +174,13 @@ def runPulseCheck(arg):
         data = checkIPForPulses(args.ip, args.api_key)
 
     else:
-        data = ""
+        data = False
 
     rprint("")
 
     output = parsePulseResponse(data, arg)
 
-    if(isValidData(output) is False):
+    if(output is False):
         response = f'[bold black on red blink]:warning: Failed to get valid response! [/bold black on red blink]'
 
     else:
