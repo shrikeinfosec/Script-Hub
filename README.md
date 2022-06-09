@@ -9,4 +9,4 @@ Any scripts I've written for specific tasks or tooling that may be useful in the
 
 ### CyberSecurity - Red Team
 
-[**apkrip**](/Red%20Team/Bash/apkrip/): Script to decompile and analyse APK files.
+[**apkrip**](/Cybersecurity/Red%20Team/Bash/apkrip/): Script to decompile and analyse APK files.
