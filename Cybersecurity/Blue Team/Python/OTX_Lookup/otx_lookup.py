@@ -185,13 +185,13 @@ def runPulseCheck(arg):
 
     output = parsePulseResponse(data, arg)
 
-    if(isValidData(output) == False):
+    if(isValidData(output) is False):
         response = f'[bold black on red blink]:warning: Failed to get valid response! [/bold black on red blink]'
 
     else:
         response = f'[bold black on green blink]Successfully retrieved data on {arg}[/bold black on green blink]'
 
-    if(args.quiet == False):
+    if(args.quiet is False):
         if(args.markdown):
 
             rprint(convertRichToMarkdown(response))
@@ -221,23 +221,23 @@ args = registerArguments()
 
 def main():
 
-    if(args.api_key == None):
+    if(args.api_key is None):
         rprint('[bold black on red blink]:warning: No API Key provided! Exiting... [/bold black on red blink]')
         exit()
 
-    if(args.ip != None):
+    if(args.ip is not None):
         rprint(f'Checking IP data for {args.ip}')
         check_data = runPulseCheck(args.ip)
         exportResults(check_data, filename=f'ip_{args.ip}.md')
 
 
-    if(args.domain != None):
+    if(args.domain is not None):
         rprint(f'Checking domain data for {args.domain}...')
         check_data = runPulseCheck(args.domain)
         exportResults(check_data, filename=f'domain_{args.domain}.md')
 
     fCompletedPulse = "[bold black on green blink]Enrichment complete.[/bold black on green blink]"
-    if(args.quiet == False):
+    if(args.quiet is False):
         if(args.markdown):
             rprint(convertRichToMarkdown(fCompletedPulse))
         else:
