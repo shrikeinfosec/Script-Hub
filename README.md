@@ -11,4 +11,5 @@ Any scripts I've written for specific tasks or tooling that may be useful in the
 
 [**apkrip**](/Cybersecurity/Red%20Team/Bash/apkrip/): Script to decompile and analyse APK files.
 
-[**social_extractor**](/Cybersecurity/Red%20Team/Python/social_extractor/): Handy script to extract social media links from other webpages. Tries to avoid duplicates where possible and filter the results.
+### CyberSecurity - OSINT
+[**social_extractor**](/Cybersecurity/OSINT/Python/social_extractor/): Handy script to extract social media links from other webpages. Tries to avoid duplicates where possible and filter the results.
