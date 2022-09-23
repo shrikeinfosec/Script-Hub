@@ -3,13 +3,13 @@ Any scripts I've written for specific tasks or tooling that may be useful in the
 
 ## Scripts
 
-### CyberSecurity - Blue Team
+### Blue Team
 
 [**OTX_Lookup**](/Cybersecurity/Blue%20Team/Python/OTX_Lookup/): Script to lookup a particular domain/ip address via the AlienVault OTX API. Allows for optional markdown export of results.
 
-### CyberSecurity - Red Team
+### Red Team
 
 [**apkrip**](/Cybersecurity/Red%20Team/Bash/apkrip/): Script to decompile and analyse APK files.
 
-### CyberSecurity - OSINT
+### OSINT
 [**social_extractor**](/Cybersecurity/OSINT/Python/social_extractor/): Handy script to extract social media links from other webpages. Tries to avoid duplicates where possible and filter the results.
