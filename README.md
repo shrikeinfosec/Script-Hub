@@ -1,8 +1,8 @@
 # Script-Hub
 
-This repo contains a collection of scripts and useful information I've created or gathered. Files are organised based on the use-case of them, but some may technically dip into other categories - as such, I've documented each one below and will try to keep the links to them up-to-date.
+This repo contains a collection of scripts and useful information I've created or gathered. Files are organized based on the use-case of them, but some may technically dip into other categories - as such, I've documented each one below and will try to keep the links to them up-to-date.
 
-Please be aware that not all of these scripts have been tested outside of my working environment, but I have made efforts to try and make them as easy to run as possible. Apologies if you find that isn't the case.
+Please be aware that not all of these scripts have been tested outside my working environment, but I have made efforts to try and make them as easy to run as possible. Apologies if you find that isn't the case.
 
 ## Scripts
 
@@ -10,7 +10,7 @@ Please be aware that not all of these scripts have been tested outside of my wor
 
 ---
 
-[**OTX_Lookup**](/Cybersecurity/Blue%20Team/Python/OTX_Lookup/): Script to lookup a particular domain/ip address via the AlienVault OTX API. Allows for optional markdown export of results.
+[**OTX_Lookup**](/Cybersecurity/Blue%20Team/Python/OTX_Lookup/): Script to look up a particular domain/IP address via the AlienVault OTX API. Allows for optional markdown export of results.
 
 ---
 
