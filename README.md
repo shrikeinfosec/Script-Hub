@@ -12,6 +12,8 @@ Please be aware that not all of these scripts have been tested outside my workin
 
 [**OTX_Lookup**](/Cybersecurity/Blue%20Team/Python/OTX_Lookup/): Script to look up a particular domain/IP address via the AlienVault OTX API. Allows for optional markdown export of results.
 
+[**cve-check**](/Cybersecurity/Blue%20Team/Python/cve-check/): Script to look up a particular CVE (or CVEs) via the AlienVault OTX API. Allows for optional CSV export of results.
+
 ---
 
 ### **CyberSecurity\Red Team**

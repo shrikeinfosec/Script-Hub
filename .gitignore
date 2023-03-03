@@ -1,3 +1,6 @@
 .git/
 .vscode/
 *.log
+venv/
+.env
+*.csv
